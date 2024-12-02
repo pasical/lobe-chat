@@ -39,7 +39,7 @@ describe('chatToolSlice', () => {
       vi.spyOn(uploadService, 'getImageFileByUrlWithCORS').mockResolvedValue(
         new File(['1'], 'file.png', { type: 'image/png' }),
       );
-      vi.spyOn(uploadService, 'uploadToClientDB').mockResolvedValue({} as any);
+      vi.spyOn(uploadService, 'uploadToClientS3').mockResolvedValue({} as any);
       vi.spyOn(fileService, 'createFile').mockResolvedValue({ id: mockId, url: '' });
       vi.spyOn(result.current, 'toggleDallEImageLoading');
 
@@ -48,7 +48,7 @@ describe('chatToolSlice', () => {
       });
       // For each prompt, loading is toggled on and then off
       expect(imageGenerationService.generateImage).toHaveBeenCalledTimes(prompts.length);
-      expect(uploadService.uploadToClientDB).toHaveBeenCalledTimes(prompts.length);
+      expect(uploadService.uploadToClientS3).toHaveBeenCalledTimes(prompts.length);
 
       expect(result.current.toggleDallEImageLoading).toHaveBeenCalledTimes(prompts.length * 2);
     });
