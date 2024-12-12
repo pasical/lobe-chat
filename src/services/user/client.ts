@@ -43,7 +43,7 @@ export class ClientService implements IUserService {
   }
 
   updateUserSettings = async (patch: DeepPartial<UserSettings>) => {
-    return this.userModel.updateSetting(patch);
+    return this.userModel.updateSetting(patch as UserSettings);
   };
 
   resetUserSettings = async () => {

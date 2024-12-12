@@ -94,7 +94,7 @@ export class UserModel {
     return this.db.delete(userSettings).where(eq(userSettings.id, this.userId));
   }
 
-  async updateSetting(value: DeepPartial<UserSettings>) {
+  async updateSetting(value: Partial<UserSettings>) {
     const { keyVaults, ...res } = value;
 
     // Encrypt keyVaults

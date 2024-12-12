@@ -91,7 +91,7 @@ export type UploadFileParams = z.infer<typeof UploadFileSchema>;
 export interface CheckFileHashResult {
   fileType?: string;
   isExist: boolean;
-  metadata?: FileMetadata;
+  metadata?: unknown;
   size?: number;
   url?: string;
 }

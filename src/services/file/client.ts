@@ -73,7 +73,7 @@ export class ClientService implements IFileService {
   }
 
   async checkFileHash(hash: string) {
-    return this.fileModel.checkHash(hash, false);
+    return this.fileModel.checkHash(hash);
   }
 
   private async getBase64ByFileHash(hash: string) {
