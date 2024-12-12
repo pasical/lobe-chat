@@ -1,9 +1,9 @@
 import { eq } from 'drizzle-orm';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { Mock, beforeEach, describe, expect, it } from 'vitest';
 
 import { clientDB } from '@/database/client/db';
 import { migrate } from '@/database/client/migrate';
-import { files, users } from '@/database/schemas';
+import { files, globalFiles, users } from '@/database/schemas';
 import { clientS3Storage } from '@/services/file/ClientS3';
 import { UploadFileParams } from '@/types/files';
 
@@ -66,20 +66,30 @@ describe('FileService', () => {
   describe('getFile', () => {
     it('should retrieve and convert local file info to FilePreview', async () => {
       const fileId = '1';
+      const file = {
+        fileType: 'image/png',
+        size: 1,
+        name: 'test.png',
+        url: 'idb://12312/abc.png',
+        hashId: '123',
+      };
+
+      await clientDB.insert(globalFiles).values(file);
+
       await clientDB.insert(files).values({
         id: fileId,
         userId,
-        fileType: 'image/png',
-        size: 1,
-        name: 'test',
+        ...file,
         createdAt: new Date(1),
         updatedAt: new Date(2),
-        url: 'idb://12312/abc.png',
-        fileHash: '1',
+        fileHash: file.hashId,
       });
 
-      // (global.URL.createObjectURL as Mock).mockReturnValue('blob:test');
-      // (global.Blob as Mock).mockImplementation(() => ['test']);
+      await clientS3Storage.putObject(
+        file.hashId,
+        new File([new ArrayBuffer(1)], file.name, { type: file.fileType }),
+      );
+
       const result = await fileService.getFile(fileId);
 
       expect(result).toMatchObject({
@@ -87,7 +97,7 @@ describe('FileService', () => {
         id: '1',
         size: 1,
         type: 'image/png',
-        name: 'test',
+        name: 'test.png',
         updatedAt: new Date(2),
       });
     });
