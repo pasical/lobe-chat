@@ -1,9 +1,11 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { mutate } from 'swr';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { INBOX_SESSION_ID } from '@/const/session';
-import { DEFAULT_AGENT_CONFIG } from '@/const/settings';
+import { clientDB } from '@/database/client/db';
+import { migrate } from '@/database/client/migrate';
+import { users } from '@/database/schemas';
 import { globalService } from '@/services/global';
 import { sessionService } from '@/services/session';
 import { useAgentStore } from '@/store/agent';
@@ -17,6 +19,13 @@ vi.mock('swr', async (importOriginal) => {
     ...(origin as any),
     mutate: vi.fn(),
   };
+});
+
+beforeAll(async () => {
+  await migrate();
+  await clientDB.transaction(async (trx) => {
+    await trx.insert(users).values({ id: '123' });
+  });
 });
 
 describe('AgentSlice', () => {
