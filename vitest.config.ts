@@ -31,6 +31,7 @@ export default defineConfig({
       '**/dist/**',
       '**/build/**',
       'src/database/server/**/**',
+      'src/database/repositories/dataImporter/**/**',
       'src/server/services/!(discover|changelog)/**/**',
     ],
     globals: true,
