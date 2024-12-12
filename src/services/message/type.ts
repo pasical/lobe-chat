@@ -1,4 +1,3 @@
-import { DB_Message } from '@/database/_deprecated/schemas/message';
 import { MessageItem } from '@/database/schemas';
 import {
   ChatMessage,
