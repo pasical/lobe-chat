@@ -1,31 +1,41 @@
 import { DeepPartial } from 'utility-types';
 
 import { clientDB } from '@/database/client/db';
+import { users } from '@/database/schemas';
 import { MessageModel } from '@/database/server/models/message';
 import { SessionModel } from '@/database/server/models/session';
 import { UserModel } from '@/database/server/models/user';
+import { BaseClientService } from '@/services/baseClientService';
 import { UserGuide, UserInitializationState, UserPreference } from '@/types/user';
 import { UserSettings } from '@/types/user/settings';
 import { AsyncLocalStorage } from '@/utils/localStorage';
+import { uuid } from '@/utils/uuid';
 
 import { IUserService } from './type';
 
-export class ClientService implements IUserService {
+export class ClientService extends BaseClientService implements IUserService {
   private preferenceStorage: AsyncLocalStorage<UserPreference>;
-  private userModel: UserModel;
-  private messageModel: MessageModel;
-  private sessionModel: SessionModel;
-  private userId: string;
 
-  constructor(userId: string) {
+  private get userModel(): UserModel {
+    return new UserModel(clientDB as any, this.userId);
+  }
+  private get messageModel(): MessageModel {
+    return new MessageModel(clientDB as any, this.userId);
+  }
+  private get sessionModel(): SessionModel {
+    return new SessionModel(clientDB as any, this.userId);
+  }
+
+  constructor(userId?: string) {
+    super(userId);
     this.preferenceStorage = new AsyncLocalStorage('LOBE_PREFERENCE');
-    this.userModel = new UserModel(clientDB as any, userId);
-    this.userId = userId;
-    this.messageModel = new MessageModel(clientDB as any, userId);
-    this.sessionModel = new SessionModel(clientDB as any, userId);
   }
 
   async getUserState(): Promise<UserInitializationState> {
+    // if user not exist in the db, create one to make sure the user exist
+    // and init the window.__lobeClientUserId
+    await this.makeSureUserExist();
+
     const state = await this.userModel.getUserState();
     const user = await UserModel.findById(clientDB as any, this.userId);
     const messageCount = await this.messageModel.count();
@@ -61,5 +71,21 @@ export class ClientService implements IUserService {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars,unused-imports/no-unused-vars
   async updateGuide(guide: Partial<UserGuide>) {
     throw new Error('Method not implemented.');
+  }
+
+  private async makeSureUserExist() {
+    const existUsers = await clientDB.query.users.findMany();
+
+    let user: { id: string };
+    if (existUsers.length === 0) {
+      const result = await clientDB.insert(users).values({ id: uuid() }).returning();
+      user = result[0];
+    } else {
+      user = existUsers[0];
+    }
+
+    if (typeof window !== 'undefined') {
+      window.__lobeClientUserId = user.id;
+    }
   }
 }

@@ -6,6 +6,9 @@ class BrowserS3Storage {
   private store;
 
   constructor() {
+    // skip server-side rendering
+    if (typeof window === 'undefined') return;
+
     this.store = createStore(BROWSER_S3_DB_NAME, 'objects');
   }
 

@@ -1,15 +1,14 @@
 import { clientDB } from '@/database/client/db';
 import { FileModel } from '@/database/server/models/file';
+import { BaseClientService } from '@/services/baseClientService';
 import { clientS3Storage } from '@/services/file/ClientS3';
 import { FileItem, UploadFileParams } from '@/types/files';
 
 import { IFileService } from './type';
 
-export class ClientService implements IFileService {
-  private fileModel: FileModel;
-
-  constructor(userId: string) {
-    this.fileModel = new FileModel(clientDB as any, userId);
+export class ClientService extends BaseClientService implements IFileService {
+  private get fileModel(): FileModel {
+    return new FileModel(clientDB as any, this.userId);
   }
 
   async createFile(file: UploadFileParams) {

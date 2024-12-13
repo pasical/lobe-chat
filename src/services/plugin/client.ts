@@ -2,16 +2,15 @@ import { LobeChatPluginManifest } from '@lobehub/chat-plugin-sdk';
 
 import { clientDB } from '@/database/client/db';
 import { PluginModel } from '@/database/server/models/plugin';
+import { BaseClientService } from '@/services/baseClientService';
 import { LobeTool } from '@/types/tool';
 import { LobeToolCustomPlugin } from '@/types/tool/plugin';
 
 import { IPluginService, InstallPluginParams } from './type';
 
-export class ClientService implements IPluginService {
-  private pluginModel: PluginModel;
-
-  constructor(userId: string) {
-    this.pluginModel = new PluginModel(clientDB as any, userId);
+export class ClientService extends BaseClientService implements IPluginService {
+  private get pluginModel(): PluginModel {
+    return new PluginModel(clientDB as any, this.userId);
   }
 
   installPlugin = async (plugin: InstallPluginParams) => {

@@ -6,6 +6,7 @@ import { clientDB } from '@/database/client/db';
 import { AgentItem } from '@/database/schemas';
 import { SessionModel } from '@/database/server/models/session';
 import { SessionGroupModel } from '@/database/server/models/sessionGroup';
+import { BaseClientService } from '@/services/baseClientService';
 import { useUserStore } from '@/store/user';
 import { LobeAgentChatConfig, LobeAgentConfig } from '@/types/agent';
 import { MetaData } from '@/types/meta';
@@ -21,13 +22,13 @@ import { merge } from '@/utils/merge';
 
 import { ISessionService } from './type';
 
-export class ClientService implements ISessionService {
-  private sessionModel: SessionModel;
-  private sessionGroupModel: SessionGroupModel;
+export class ClientService extends BaseClientService implements ISessionService {
+  private get sessionModel(): SessionModel {
+    return new SessionModel(clientDB as any, this.userId);
+  }
 
-  constructor(userId: string) {
-    this.sessionGroupModel = new SessionGroupModel(clientDB as any, userId);
-    this.sessionModel = new SessionModel(clientDB as any, userId);
+  private get sessionGroupModel(): SessionGroupModel {
+    return new SessionGroupModel(clientDB as any, this.userId);
   }
 
   async createSession(type: LobeSessionType, data: Partial<LobeAgentSession>): Promise<string> {

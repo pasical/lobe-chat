@@ -65,13 +65,13 @@ describe('FileService', () => {
 
   describe('getFile', () => {
     it('should retrieve and convert local file info to FilePreview', async () => {
-      const fileId = '1';
+      const fileId = 'rwlijweled';
       const file = {
         fileType: 'image/png',
         size: 1,
         name: 'test.png',
         url: 'idb://12312/abc.png',
-        hashId: '123',
+        hashId: '123tttt',
       };
 
       await clientDB.insert(globalFiles).values(file);
@@ -94,7 +94,7 @@ describe('FileService', () => {
 
       expect(result).toMatchObject({
         createdAt: new Date(1),
-        id: '1',
+        id: 'rwlijweled',
         size: 1,
         type: 'image/png',
         name: 'test.png',

@@ -1,13 +1,13 @@
 import { clientDB } from '@/database/client/db';
 import { TopicModel } from '@/database/server/models/topic';
+import { BaseClientService } from '@/services/baseClientService';
 import { ChatTopic } from '@/types/topic';
 
 import { CreateTopicParams, ITopicService, QueryTopicParams } from './type';
 
-export class ClientService implements ITopicService {
-  private topicModel: TopicModel;
-  constructor(userId: string) {
-    this.topicModel = new TopicModel(clientDB as any, userId);
+export class ClientService extends BaseClientService implements ITopicService {
+  private get topicModel(): TopicModel {
+    return new TopicModel(clientDB as any, this.userId);
   }
 
   async createTopic(params: CreateTopicParams): Promise<string> {

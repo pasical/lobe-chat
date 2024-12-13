@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { clientDB } from '@/database/client/db';
 import { MessageItem } from '@/database/schemas';
 import { MessageModel } from '@/database/server/models/message';
+import { BaseClientService } from '@/services/baseClientService';
 import {
   ChatMessage,
   ChatMessageError,
@@ -13,11 +14,9 @@ import {
 
 import { IMessageService } from './type';
 
-export class ClientService implements IMessageService {
-  private messageModel: MessageModel;
-
-  constructor(userId: string) {
-    this.messageModel = new MessageModel(clientDB as any, userId);
+export class ClientService extends BaseClientService implements IMessageService {
+  private get messageModel(): MessageModel {
+    return new MessageModel(clientDB as any, this.userId);
   }
 
   async createMessage(data: CreateMessageParams) {
