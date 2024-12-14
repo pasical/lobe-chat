@@ -95,8 +95,8 @@ const StoreInitialization = memo(() => {
 
   useEffect(() => {
     initializeDB({
-      onProgress: (progress, phase) => {
-        console.log('progress:', progress, phase);
+      onProgress: ({ phase, progress, costTime }) => {
+        console.log(`Loading ${phase}: ${progress}%`, costTime ? `, used:${costTime}ms` : '');
       },
       onStateChange: (state) => {
         console.log(
