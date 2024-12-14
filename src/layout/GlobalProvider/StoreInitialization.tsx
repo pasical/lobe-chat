@@ -1,11 +1,13 @@
 'use client';
 
+import dayjs from 'dayjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { memo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createStoreUpdater } from 'zustand-utils';
 
 import { LOBE_URL_IMPORT_NAME } from '@/const/url';
+import { initializeDB } from '@/database/client/db';
 import { migrate } from '@/database/client/migrate';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { useEnabledDataSync } from '@/hooks/useSyncData';
@@ -92,8 +94,21 @@ const StoreInitialization = memo(() => {
   }, [router, mobile]);
 
   useEffect(() => {
-    migrate().then(() => {
-      console.log('migrate success!');
+    initializeDB({
+      onProgress: (progress, phase) => {
+        console.log('progress:', progress, phase);
+      },
+      onStateChange: (state) => {
+        console.log(
+          'state:',
+          `${dayjs().minute()}:${dayjs().second()}:${dayjs().millisecond()}`,
+          state,
+        );
+      },
+    }).then(() => {
+      migrate(true).then(() => {
+        console.log('migrate success!');
+      });
     });
   }, []);
   return null;
