@@ -2,8 +2,7 @@ import { eq } from 'drizzle-orm';
 import { DeepPartial } from 'utility-types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { clientDB } from '@/database/client/db';
-import { migrate } from '@/database/client/migrate';
+import { clientDB, migrate } from '@/database/client/dbForTest';
 import { userSettings, users } from '@/database/schemas';
 import { UserPreference } from '@/types/user';
 import { UserSettings } from '@/types/user/settings';

@@ -2,8 +2,7 @@
 import { eq, inArray } from 'drizzle-orm';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { clientDB } from '@/database/client/db';
-import { migrate } from '@/database/client/migrate';
+import { clientDB, migrate } from '@/database/client/dbForTest';
 import {
   agents,
   agentsToSessions,

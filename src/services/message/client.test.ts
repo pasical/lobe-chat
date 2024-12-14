@@ -3,8 +3,7 @@ import { and, eq } from 'drizzle-orm';
 import { Mock, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MessageModel } from '@/database/_deprecated/models/message';
-import { clientDB } from '@/database/client/db';
-import { migrate } from '@/database/client/migrate';
+import { clientDB, migrate } from '@/database/client/dbForTest';
 import {
   MessageItem,
   files,

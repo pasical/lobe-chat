@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { INBOX_SESSION_ID } from '@/const/session';
 import { clientDB } from '@/database/client/db';
-import { migrate } from '@/database/client/migrate';
+import { migrate } from '@/database/client/dbForTest';
 import { users } from '@/database/schemas';
 import { globalService } from '@/services/global';
 import { sessionService } from '@/services/session';

@@ -1,8 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { clientDB } from '@/database/client/db';
-import { migrate } from '@/database/client/migrate';
+import { clientDB, migrate } from '@/database/client/dbForTest';
 import { sessions, topics, users } from '@/database/schemas';
 import { ChatTopic } from '@/types/topic';
 

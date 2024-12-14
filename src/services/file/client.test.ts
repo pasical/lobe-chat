@@ -1,8 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { Mock, beforeEach, describe, expect, it } from 'vitest';
 
-import { clientDB } from '@/database/client/db';
-import { migrate } from '@/database/client/migrate';
+import { clientDB, migrate } from '@/database/client/dbForTest';
 import { files, globalFiles, users } from '@/database/schemas';
 import { clientS3Storage } from '@/services/file/ClientS3';
 import { UploadFileParams } from '@/types/files';

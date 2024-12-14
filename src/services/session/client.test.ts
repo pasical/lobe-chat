@@ -1,8 +1,7 @@
 import { eq, not } from 'drizzle-orm/expressions';
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { clientDB } from '@/database/client/db';
-import { migrate } from '@/database/client/migrate';
+import { clientDB, migrate } from '@/database/client/dbForTest';
 import {
   NewSession,
   SessionItem,

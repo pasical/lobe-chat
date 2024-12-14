@@ -11,6 +11,7 @@ export enum DatabaseLoadingState {
   Initializing = 'initializing',
   LoadingDependencies = 'loading_dependencies',
   LoadingWasm = 'loading_wasm',
+  Migrating = 'migrating',
   Ready = 'ready',
 }
 
@@ -32,6 +33,7 @@ class DatabaseManager {
   private initPromise: Promise<DrizzleInstance> | null = null;
   private currentState: DatabaseLoadingState = DatabaseLoadingState.Idle;
   private callbacks?: DatabaseLoadingCallbacks;
+  private isLocalDBSchemaSynced = false;
 
   // CDN 配置
   private static WASM_CDN_URL =
@@ -136,6 +138,29 @@ class DatabaseManager {
     return { IdbFs, MemoryFS, PGlite, drizzle, vector };
   }
 
+  // 数据库迁移方法
+  private async migrate(skipMultiRun = false): Promise<DrizzleInstance> {
+    if (this.isLocalDBSchemaSynced && skipMultiRun) return this.db;
+
+    const start = Date.now();
+    try {
+      this.callbacks?.onStateChange?.(DatabaseLoadingState.Migrating);
+
+      const { default: migrations } = await import('./migrations.json');
+      // refs: https://github.com/drizzle-team/drizzle-orm/discussions/2532
+      // @ts-expect-error
+      await this.db.dialect.migrate(migrations, this.db.session, {});
+      this.isLocalDBSchemaSynced = true;
+
+      console.info(`✅ Local database ready in ${Date.now() - start}ms`);
+    } catch (cause) {
+      console.error('❌ Local database schema migration failed', cause);
+      throw cause;
+    }
+
+    return this.db;
+  }
+
   // 初始化数据库
   async initialize(callbacks?: DatabaseLoadingCallbacks): Promise<DrizzleInstance> {
     if (this.initPromise) return this.initPromise;
@@ -163,6 +188,11 @@ class DatabaseManager {
         });
 
         this.dbInstance = drizzle({ client: db, schema });
+
+        this.callbacks?.onStateChange?.(DatabaseLoadingState.Migrating);
+
+        await this.migrate(true);
+
         this.callbacks?.onStateChange?.(DatabaseLoadingState.Ready);
 
         return this.dbInstance as DrizzleInstance;

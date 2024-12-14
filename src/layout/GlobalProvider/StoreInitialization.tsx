@@ -8,7 +8,6 @@ import { createStoreUpdater } from 'zustand-utils';
 
 import { LOBE_URL_IMPORT_NAME } from '@/const/url';
 import { initializeDB } from '@/database/client/db';
-import { migrate } from '@/database/client/migrate';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { useEnabledDataSync } from '@/hooks/useSyncData';
 import { useAgentStore } from '@/store/agent';
@@ -105,10 +104,6 @@ const StoreInitialization = memo(() => {
           state,
         );
       },
-    }).then(() => {
-      migrate(true).then(() => {
-        console.log('migrate success!');
-      });
     });
   }, []);
   return null;
